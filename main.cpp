@@ -1,21 +1,3 @@
-/*
-Item 4: 
-All members of these classes should be initialized before they are used. 
-For the Toy class, the "name" member is initialized manually when it is declared (so it has a 
-default value).  Also this member value can be changed with a function or when a new Toy object 
-is created using a constructor with parameters and also an initializaton list, because the members of an
-object are initialized before the body of a constructor is entered. 
-For the derived class, MinAge toys, the initialization of the "minAge" member is done at declaration.
-
-Item 5:
-To know exactly which constructor is used, we added a print statement inside all constructors / operators.
-
-Item 6:
-For the MinAgeToy class we disallow the use of COPY constructor by declaring the method private and
-without any implementation. Another method would be signature_function = delete or to use the base class
-Uncopyable.
-*/
-
 #include <iostream>
 using namespace std;
 
@@ -37,8 +19,13 @@ class Toy {
         }
 
         Toy& operator = (const Toy &toy) {
+            if (this == &toy) {             // Item 11 base class
+                cout << "Assignment to self stopped for the base class... Be more careful next time :)\n" << endl;
+                return *this;
+            }
             this->name = toy.name;
-            cout << "Toy created using COPY ASSIGNMENT OPERATOR" << endl;
+            // cout << "Toy created using COPY ASSIGNMENT OPERATOR with RETURN" << endl;
+            return *this;                  // Item 10 base class: assignment operator returns a reference to *this
         }
 
         virtual void welcomeMessage() {
@@ -47,6 +34,10 @@ class Toy {
 
         void changeName(string newName) {
             this->name = newName;
+        }
+
+        void printName() {
+            cout << "My name is " << this->name << endl;
         }
 
         virtual ~Toy() {
@@ -68,8 +59,15 @@ class MinAgeToy : public Toy {
         // MinAgeToy (const MinAgeToy &toy) = delete;      //disallow the use of COPY constructor
 
         MinAgeToy& operator = (const MinAgeToy &toy) {
+            if (this == &toy) {             // Item 11 derived class
+                cout << "Assignment to self stopped for the derived class... Be more careful next time :)\n" << endl;
+                return *this;
+            }
+
+            Toy::operator = (toy);          // Item 12: if this line is commented then the value for the "name" member will always have the default value, even though the value was changed
             this->minAge = toy.minAge;
-            cout << "Toy created using COPY ASSIGNMENT OPERATOR" << endl;
+            // cout << "Toy created using COPY ASSIGNMENT OPERATOR with RETURN" << endl;
+            return *this;                  // Item 10 derived class: assignment operator returns a reference to *this
         }
 
         void welcomeMessage() {
@@ -103,8 +101,9 @@ int main() {
     myToy3.changeName("Bobby");
     myToy3.welcomeMessage();
 
-    myToy3 = myToy2;            // COPY ASSIGNMENT OPERATOR
+    myToy3 = myToy2;            // COPY ASSIGNMENT OPERATOR with RETURN
     myToy3.welcomeMessage();
+    myToy3 = myToy3;            // SELF ASSIGNMENT
 
 
     // minimum age required toys created using constructor WITHOUT parameters / COPY ASSIGNMENT OPERATOR
@@ -119,4 +118,14 @@ int main() {
     maToy3.welcomeMessage();
     maToy3 = maToy;                 // COPY ASSIGNMENT OPERATOR
     maToy3.welcomeMessage();
+    maToy3 = maToy3;                // SELF ASSIGNMENT
+
+    cout << "\nItem 12:" << endl;
+    MinAgeToy thunder;
+    MinAgeToy whiskey;
+    whiskey.changeName("Bobby");
+    thunder = whiskey;
+    thunder.printName();
+    whiskey.printName();
+    cout << endl;
 }
