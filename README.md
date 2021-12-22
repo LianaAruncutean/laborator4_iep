@@ -30,3 +30,12 @@ Inside all copy assignment operators within this project, the assignment to self
 
 ### Item 12
 Inside the copy assignment operator of the derived class was introduced a new line of code which calls also the copy assignment operator of the base class, to make sure that all parts of the object are copied.
+
+
+### Item 13
+I used two types of object in order to manage the resources: unique_ptr and shared_ptr. The main difference between these two types of objects is the fact that only one unique_ptr can point to 
+a resource, but multiple shared_ptrs can point to the same resource. The resource is deleted (by the destructor of the smart pointer) when there is no longer a smart pointer pointing at it.
+
+
+### Item 14
+For my Lock class, I decided to prohibit the copy of a RAII object by using the Uncopyable class.
